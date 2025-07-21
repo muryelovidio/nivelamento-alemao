@@ -1,0 +1,27 @@
+// index.js
+import express from "express";
+import dotenv from "dotenv";
+import path from "path";
+import { registerRoutes } from "./api/quiz.js";
+
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+// Registra a rota /api/quiz
+await registerRoutes(app);
+
+// Serve arquivos estáticos de public/
+const publicPath = path.resolve("./public");
+app.use(express.static(publicPath));
+
+// Para qualquer outra rota, devolve index.html (SPA)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(publicPath, "index.html"));
+});
+
+const port = process.env.PORT || 3000;
+app.listen(port, () =>
+  console.log(`> Server rodando em http://localhost:${port}`)
+);
